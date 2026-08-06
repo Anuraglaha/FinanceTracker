@@ -1,9 +1,12 @@
 package com.anurag.financetracker.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -28,4 +31,6 @@ public class User {
     @NotBlank(message = "Password cannot be empty")
     private String password;
 
+    @OneToMany(mappedBy = "user")
+    private List<Transaction> transactions;
 }
