@@ -89,4 +89,24 @@ public class TransactionService {
         );
     }
 
+    public ApiResponse<TransactionResponse> getTransactionById(Integer id) {
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+
+        TransactionResponse response = new TransactionResponse();
+
+        response.setId(transaction.getId());
+        response.setAmount(transaction.getAmount());
+        response.setType(transaction.getType());
+        response.setCategory(transaction.getCategory());
+        response.setDescription(transaction.getDescription());
+        response.setTransactionDate(transaction.getTransactionDate());
+        response.setCreatedAt(transaction.getCreatedAt());
+
+        return new ApiResponse<>(
+                true,
+                "Transaction fetched successfully",
+                response
+        );
+    }
 }
