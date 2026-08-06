@@ -116,7 +116,7 @@ public class TransactionService {
         LocalDate to) {
         
         List<Transaction> transactions = transactionRepository.findByTransactionDateBetween(from, to);
-        
+
         List<TransactionResponse> responseList = new ArrayList<>();
 
         for (Transaction transaction : transactions) {
@@ -138,6 +138,46 @@ public class TransactionService {
                 true,
                 "Transactions fetched successfully",
                 responseList
+        );
+    }
+
+    public ApiResponse<TransactionResponse> updateTransaction(Integer id, AddTransactionRequest request) {
+
+        Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new RuntimeException("Transaction not found"));
+        transaction.setAmount(request.getAmount());
+        transaction.setType(request.getType());
+        transaction.setCategory(request.getCategory());
+        transaction.setDescription(request.getDescription());
+        transaction.setTransactionDate(request.getTransactionDate());
+
+    Transaction updatedTransaction = transactionRepository.save(transaction);
+
+        TransactionResponse response = new TransactionResponse();
+
+        response.setId(updatedTransaction.getId());
+        response.setAmount(updatedTransaction.getAmount());
+        response.setType(updatedTransaction.getType());
+        response.setCategory(updatedTransaction.getCategory());
+        response.setDescription(updatedTransaction.getDescription());
+        response.setTransactionDate(updatedTransaction.getTransactionDate());
+        response.setCreatedAt(updatedTransaction.getCreatedAt());
+    
+        return new ApiResponse<>(
+            true,
+            "Transaction updated successfully",
+            response
+        );
+    }
+
+    public ApiResponse<String> deleteTransaction(Integer id) {
+
+        Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new RuntimeException("Transaction not found"));
+        transactionRepository.delete(transaction);
+
+        return new ApiResponse<>(
+                true,
+                "Transaction deleted successfully",
+                null
         );
     }
 }
