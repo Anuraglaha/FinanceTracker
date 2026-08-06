@@ -1,5 +1,6 @@
 package com.anurag.financetracker.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.validation.annotation.Validated;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.anurag.financetracker.dto.AddTransactionRequest;
@@ -46,5 +48,14 @@ public class TransactionController {
 
         return transactionService.getTransactionById(id);
     }
-    
+
+    @GetMapping("/date-range")
+    public ApiResponse<List<TransactionResponse>> getTransactionsBetweenDates(
+
+            @RequestParam LocalDate from,
+
+            @RequestParam LocalDate to) {
+
+        return transactionService.getTransactionsBetweenDates(from, to);
+    }
 }

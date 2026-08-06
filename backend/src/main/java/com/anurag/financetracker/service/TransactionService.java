@@ -1,5 +1,6 @@
 package com.anurag.financetracker.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -107,6 +108,36 @@ public class TransactionService {
                 true,
                 "Transaction fetched successfully",
                 response
+        );
+    }
+
+    public ApiResponse<List<TransactionResponse>> getTransactionsBetweenDates(
+        LocalDate from,
+        LocalDate to) {
+        
+        List<Transaction> transactions = transactionRepository.findByTransactionDateBetween(from, to);
+        
+        List<TransactionResponse> responseList = new ArrayList<>();
+
+        for (Transaction transaction : transactions) {
+
+            TransactionResponse response = new TransactionResponse();
+
+            response.setId(transaction.getId());
+            response.setAmount(transaction.getAmount());
+            response.setType(transaction.getType());
+            response.setCategory(transaction.getCategory());
+            response.setDescription(transaction.getDescription());
+            response.setTransactionDate(transaction.getTransactionDate());
+            response.setCreatedAt(transaction.getCreatedAt());
+
+            responseList.add(response);
+        }
+
+        return new ApiResponse<>(
+                true,
+                "Transactions fetched successfully",
+                responseList
         );
     }
 }
