@@ -1,6 +1,8 @@
 package com.anurag.financetracker.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -58,4 +60,33 @@ public class TransactionService {
                 response
         );
     }
+
+    public ApiResponse<List<TransactionResponse>> getAllTransactions() {
+
+        List<Transaction> transactions = transactionRepository.findAll();
+
+        List<TransactionResponse> responseList = new ArrayList<>();
+
+        for (Transaction transaction : transactions) {
+
+            TransactionResponse response = new TransactionResponse();
+
+            response.setId(transaction.getId());
+            response.setAmount(transaction.getAmount());
+            response.setType(transaction.getType());
+            response.setCategory(transaction.getCategory());
+            response.setDescription(transaction.getDescription());
+            response.setTransactionDate(transaction.getTransactionDate());
+            response.setCreatedAt(transaction.getCreatedAt());
+
+            responseList.add(response);
+        }
+
+        return new ApiResponse<>(
+                true,
+                "Transactions fetched successfully",
+                responseList
+        );
+    }
+
 }
