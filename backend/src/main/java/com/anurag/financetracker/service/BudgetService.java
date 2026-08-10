@@ -8,6 +8,11 @@ import com.anurag.financetracker.entity.User;
 import com.anurag.financetracker.repository.BudgetRepository;
 import com.anurag.financetracker.repository.UserRepository;
 
+import java.util.*;
+
+import org.springframework.stereotype.Service;
+
+@Service
 public class BudgetService {
 
     private final BudgetRepository budgetRepository;
@@ -41,6 +46,30 @@ public class BudgetService {
                 "Budget added successfully",
                 response
         );
+    }
 
+    public ApiResponse<List<BudgetResponse>> getAllBudgets() {
+
+        List<Budget> budgets = budgetRepository.findAll();
+
+        List<BudgetResponse> responses = new ArrayList<>();
+
+        for (Budget budget : budgets) {
+
+            BudgetResponse response = new BudgetResponse();
+
+            response.setId(budget.getId());
+            response.setBudgetMonth(budget.getBudgetMonth());
+            response.setBudgetType(budget.getBudgetType());
+            response.setBudgetAmount(budget.getBudgetAmount());
+
+            responses.add(response);
+        }
+
+        return new ApiResponse<>(
+                true,
+                "Budgets fetched successfully",
+                responses
+        );
     }
 }
