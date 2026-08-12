@@ -65,6 +65,19 @@ public class BudgetService {
         );
     }
 
+    public ApiResponse<String> deleteBudget(Integer id) {
+
+        Budget budget = budgetRepository.findById(id).orElseThrow(() -> new RuntimeException("Budget not found"));
+
+        budgetRepository.delete(budget);
+
+        return new ApiResponse<>(
+                true,
+                "Budget deleted successfully",
+                null
+        );
+}
+
     public ApiResponse<BudgetResponse> updateBudget(
         Integer id,
         UpdateBudgetRequest request) {

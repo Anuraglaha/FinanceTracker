@@ -2,6 +2,7 @@ package com.anurag.financetracker.controller;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,6 +55,12 @@ public class BudgetController {
             @Valid @RequestBody UpdateBudgetRequest request) {
 
         return budgetService.updateBudget(id, request);
+    }
+    
+    @DeleteMapping("/{id}")
+    public ApiResponse<String> deleteBudget(@PathVariable Integer id) {
+
+        return budgetService.deleteBudget(id);
     }
     
 }
