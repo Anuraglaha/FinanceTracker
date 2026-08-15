@@ -1,6 +1,6 @@
 package com.anurag.financetracker.enums;
 
-public enum BudgetType {
+public enum Category {
     FOOD,
     TRAVEL,
     SHOPPING,

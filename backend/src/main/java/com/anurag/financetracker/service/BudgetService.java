@@ -30,9 +30,9 @@ public class BudgetService {
         User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
         
         
-        boolean exists = budgetRepository.existsByUserAndBudgetTypeAndBudgetMonth(
+        boolean exists = budgetRepository.existsByUserAndCategoryAndBudgetMonth(
                 user,
-                request.getBudgetType(),
+                request.getCategory(),
                 request.getBudgetMonth()
         );
         
@@ -46,7 +46,7 @@ public class BudgetService {
         Budget budget = new Budget();
         budget.setUser(user);
         budget.setBudgetMonth(request.getBudgetMonth());
-        budget.setBudgetType(request.getBudgetType());
+        budget.setCategory(request.getCategory());
         budget.setBudgetAmount(request.getBudgetAmount());
 
         Budget savedBudget = budgetRepository.save(budget);
@@ -55,7 +55,7 @@ public class BudgetService {
 
         response.setId(savedBudget.getId());
         response.setBudgetMonth(savedBudget.getBudgetMonth());
-        response.setBudgetType(savedBudget.getBudgetType());
+        response.setCategory(savedBudget.getCategory());
         response.setBudgetAmount(savedBudget.getBudgetAmount());
 
         return new ApiResponse<>(
@@ -85,21 +85,21 @@ public class BudgetService {
         Budget budget = budgetRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Budget not found"));
 
-        boolean exists = budgetRepository.existsByUserAndBudgetTypeAndBudgetMonthAndIdNot(
+        boolean exists = budgetRepository.existsByUserAndCategoryAndBudgetMonthAndIdNot(
                 budget.getUser(),
-                request.getBudgetType(),
+                request.getCategory(),
                 request.getBudgetMonth(),
                 id
         );
 
         if (exists) {
             throw new RuntimeException(
-                    "Another budget already exists for this user, type and month"
+                    "Another budget already exists for this user, category and month"
             );
         }
 
         budget.setBudgetMonth(request.getBudgetMonth());
-        budget.setBudgetType(request.getBudgetType());
+        budget.setCategory(request.getCategory());
         budget.setBudgetAmount(request.getBudgetAmount());
 
         Budget updatedBudget = budgetRepository.save(budget);
@@ -108,7 +108,7 @@ public class BudgetService {
 
         response.setId(updatedBudget.getId());
         response.setBudgetMonth(updatedBudget.getBudgetMonth());
-        response.setBudgetType(updatedBudget.getBudgetType());
+        response.setCategory(updatedBudget.getCategory());
         response.setBudgetAmount(updatedBudget.getBudgetAmount());
 
         return new ApiResponse<>(
@@ -130,7 +130,7 @@ public class BudgetService {
 
             response.setId(budget.getId());
             response.setBudgetMonth(budget.getBudgetMonth());
-            response.setBudgetType(budget.getBudgetType());
+            response.setCategory(budget.getCategory());
             response.setBudgetAmount(budget.getBudgetAmount());
 
             responses.add(response);
@@ -153,7 +153,7 @@ public class BudgetService {
 
         response.setId(budget.getId());
         response.setBudgetMonth(budget.getBudgetMonth());
-        response.setBudgetType(budget.getBudgetType());
+        response.setCategory(budget.getCategory());
         response.setBudgetAmount(budget.getBudgetAmount());
 
         return new ApiResponse<>(

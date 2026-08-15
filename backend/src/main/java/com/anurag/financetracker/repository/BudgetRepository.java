@@ -6,19 +6,19 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.anurag.financetracker.entity.Budget;
 import com.anurag.financetracker.entity.User;
-import com.anurag.financetracker.enums.BudgetType;
+import com.anurag.financetracker.enums.Category;
 
 public interface BudgetRepository extends JpaRepository<Budget, Integer> {
     
-    boolean existsByUserAndBudgetTypeAndBudgetMonth(
+    boolean existsByUserAndCategoryAndBudgetMonth(
         User user,
-        BudgetType budgetType,
+        Category category,
         LocalDate budgetMonth
     );
 
-    boolean existsByUserAndBudgetTypeAndBudgetMonthAndIdNot(
+    boolean existsByUserAndCategoryAndBudgetMonthAndIdNot(
         User user,
-        BudgetType budgetType,
+        Category category,
         LocalDate budgetMonth,
         Integer id
     );

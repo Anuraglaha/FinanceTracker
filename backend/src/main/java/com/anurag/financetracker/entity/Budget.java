@@ -1,10 +1,20 @@
 package com.anurag.financetracker.entity;
 
-import com.anurag.financetracker.enums.BudgetType;
-import jakarta.persistence.*;
-import lombok.Data;
-
 import java.time.LocalDate;
+
+import com.anurag.financetracker.enums.Category;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Data
@@ -23,8 +33,8 @@ public class Budget {
     private LocalDate budgetMonth;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "budget_type", nullable = false)
-    private BudgetType budgetType;
+    @Column(name = "category", nullable = false)
+    private Category category;
 
     @Column(name = "budget_amount", nullable = false)
     private Double budgetAmount;

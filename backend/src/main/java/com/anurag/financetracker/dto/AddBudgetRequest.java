@@ -1,11 +1,12 @@
 package com.anurag.financetracker.dto;
 
-import com.anurag.financetracker.enums.BudgetType;
+import java.time.LocalDate;
+
+import com.anurag.financetracker.enums.Category;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
-
-import java.time.LocalDate;
 
 @Data
 public class AddBudgetRequest {
@@ -17,7 +18,7 @@ public class AddBudgetRequest {
     private LocalDate budgetMonth;
 
     @NotNull
-    private BudgetType budgetType;
+    private Category category;
 
     @NotNull
     @Positive

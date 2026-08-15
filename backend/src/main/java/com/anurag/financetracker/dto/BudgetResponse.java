@@ -1,15 +1,16 @@
 package com.anurag.financetracker.dto;
 
-import com.anurag.financetracker.enums.BudgetType;
-import lombok.Data;
-
 import java.time.LocalDate;
+
+import com.anurag.financetracker.enums.Category;
+
+import lombok.Data;
 
 @Data
 public class BudgetResponse {
 
     private Integer id;
     private LocalDate budgetMonth;
-    private BudgetType budgetType;
+    private Category category;
     private Double budgetAmount;
 }
