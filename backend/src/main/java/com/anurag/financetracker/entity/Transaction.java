@@ -3,6 +3,7 @@ package com.anurag.financetracker.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.anurag.financetracker.enums.Category;
 import com.anurag.financetracker.enums.TransactionType;
 
 import jakarta.persistence.Entity;
@@ -30,7 +31,8 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private TransactionType type;
 
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private Category category;
 
     private String description;
 

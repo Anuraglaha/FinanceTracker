@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import com.anurag.financetracker.enums.Category;
 
 import com.anurag.financetracker.dto.AddTransactionRequest;
 import com.anurag.financetracker.dto.ApiResponse;

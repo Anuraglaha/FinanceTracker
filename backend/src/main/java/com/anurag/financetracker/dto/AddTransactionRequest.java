@@ -2,6 +2,7 @@ package com.anurag.financetracker.dto;
 
 import java.time.LocalDate;
 
+import com.anurag.financetracker.enums.Category;
 import com.anurag.financetracker.enums.TransactionType;
 
 import jakarta.validation.constraints.NotBlank;
@@ -24,7 +25,7 @@ public class AddTransactionRequest {
     private TransactionType type;
 
     @NotBlank
-    private String category;
+    private Category category;
 
     private String description;
 
