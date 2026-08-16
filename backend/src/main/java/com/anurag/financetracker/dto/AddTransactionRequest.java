@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import com.anurag.financetracker.enums.Category;
 import com.anurag.financetracker.enums.TransactionType;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
@@ -24,7 +23,7 @@ public class AddTransactionRequest {
     @NotNull
     private TransactionType type;
 
-    @NotBlank
+    @NotNull
     private Category category;
 
     private String description;

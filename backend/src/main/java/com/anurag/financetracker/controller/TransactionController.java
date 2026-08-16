@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.anurag.financetracker.dto.AddTransactionRequest;
 import com.anurag.financetracker.dto.ApiResponse;
+import com.anurag.financetracker.dto.MonthlySummaryResponse;
 import com.anurag.financetracker.dto.TransactionResponse;
 import com.anurag.financetracker.service.TransactionService;
 
@@ -75,4 +76,13 @@ public class TransactionController {
 
         return transactionService.deleteTransaction(id);
     }
+
+    @GetMapping("/monthly-summary")
+    public ApiResponse<MonthlySummaryResponse> getMonthlySummary(
+            @RequestParam Integer userId,
+            @RequestParam LocalDate month) {
+
+        return transactionService.getMonthlySummary(userId, month);
+    }
+    
 }

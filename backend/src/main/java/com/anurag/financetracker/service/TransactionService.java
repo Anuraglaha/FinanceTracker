@@ -6,13 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import com.anurag.financetracker.enums.Category;
 
 import com.anurag.financetracker.dto.AddTransactionRequest;
 import com.anurag.financetracker.dto.ApiResponse;
+import com.anurag.financetracker.dto.MonthlySummaryResponse;
 import com.anurag.financetracker.dto.TransactionResponse;
 import com.anurag.financetracker.entity.Transaction;
 import com.anurag.financetracker.entity.User;
+import com.anurag.financetracker.enums.TransactionType;
 import com.anurag.financetracker.repository.TransactionRepository;
 import com.anurag.financetracker.repository.UserRepository;
 
@@ -181,4 +182,46 @@ public class TransactionService {
                 null
         );
     }
+
+    
+    public ApiResponse<MonthlySummaryResponse> getMonthlySummary(
+        Integer userId,
+        LocalDate month) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        LocalDate startDate = month;
+        LocalDate endDate = month.plusMonths(1);
+
+        Double totalIncome = transactionRepository.getTotalAmount(
+                user,
+                startDate,
+                endDate,
+                TransactionType.INCOME
+        );
+
+        Double totalExpense = transactionRepository.getTotalAmount(
+                user,
+                startDate,
+                endDate,
+                TransactionType.EXPENSE
+        );
+
+        Double balance = totalIncome - totalExpense;
+
+        MonthlySummaryResponse response = new MonthlySummaryResponse();
+
+        response.setTotalIncome(totalIncome);
+        response.setTotalExpense(totalExpense);
+        response.setBalance(balance);
+
+        return new ApiResponse<>(
+                true,
+                "Monthly summary fetched successfully",
+                response
+        );
+    }
+
+    
 }

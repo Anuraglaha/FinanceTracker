@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.anurag.financetracker.dto.AddBudgetRequest;
 import com.anurag.financetracker.dto.ApiResponse;
 import com.anurag.financetracker.dto.BudgetResponse;
+import com.anurag.financetracker.dto.BudgetSummaryResponse;
 import com.anurag.financetracker.dto.UpdateBudgetRequest;
 import com.anurag.financetracker.service.BudgetService;
 
@@ -61,6 +62,13 @@ public class BudgetController {
     public ApiResponse<String> deleteBudget(@PathVariable Integer id) {
 
         return budgetService.deleteBudget(id);
+    }
+
+    @GetMapping("/{id}/summary")
+    public ApiResponse<BudgetSummaryResponse> getBudgetSummary(
+            @PathVariable Integer id) {
+
+        return budgetService.getBudgetSummary(id);
     }
     
 }

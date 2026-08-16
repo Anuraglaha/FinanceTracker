@@ -1,5 +1,6 @@
 package com.anurag.financetracker.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,22 +9,32 @@ import org.springframework.stereotype.Service;
 import com.anurag.financetracker.dto.AddBudgetRequest;
 import com.anurag.financetracker.dto.ApiResponse;
 import com.anurag.financetracker.dto.BudgetResponse;
+import com.anurag.financetracker.dto.BudgetSummaryResponse;
 import com.anurag.financetracker.dto.UpdateBudgetRequest;
 import com.anurag.financetracker.entity.Budget;
 import com.anurag.financetracker.entity.User;
+import com.anurag.financetracker.enums.TransactionType;
 import com.anurag.financetracker.repository.BudgetRepository;
+import com.anurag.financetracker.repository.TransactionRepository;
 import com.anurag.financetracker.repository.UserRepository;
+
 
 @Service
 public class BudgetService {
 
     private final BudgetRepository budgetRepository;
     private final UserRepository userRepository;
+    private final TransactionRepository transactionRepository;
 
-    public BudgetService(BudgetRepository budgetRepository, UserRepository userRepository) {
-        this.budgetRepository = budgetRepository;
-        this.userRepository = userRepository;
-    }
+    public BudgetService(
+        BudgetRepository budgetRepository,
+        UserRepository userRepository,
+        TransactionRepository transactionRepository) {
+
+                this.budgetRepository = budgetRepository;
+                this.userRepository = userRepository;
+                this.transactionRepository = transactionRepository;
+        }
 
 
     public ApiResponse<BudgetResponse> addBudget(AddBudgetRequest request) {
@@ -159,6 +170,37 @@ public class BudgetService {
         return new ApiResponse<>(
                 true,
                 "Budget fetched successfully",
+                response
+        );
+    }
+
+    public ApiResponse<BudgetSummaryResponse> getBudgetSummary(Integer id) {
+
+        Budget budget = budgetRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Budget not found"));
+
+        LocalDate startDate = budget.getBudgetMonth();
+        LocalDate endDate = startDate.plusMonths(1);
+
+        Double spentAmount = transactionRepository.getTotalExpense(
+                budget.getUser(),
+                budget.getCategory(),
+                startDate,
+                endDate,
+                TransactionType.EXPENSE
+        );
+
+        Double remainingAmount = budget.getBudgetAmount() - spentAmount;
+
+        BudgetSummaryResponse response = new BudgetSummaryResponse();
+
+        response.setBudgetAmount(budget.getBudgetAmount());
+        response.setSpentAmount(spentAmount);
+        response.setRemainingAmount(remainingAmount);
+
+        return new ApiResponse<>(
+                true,
+                "Budget summary fetched successfully",
                 response
         );
     }
