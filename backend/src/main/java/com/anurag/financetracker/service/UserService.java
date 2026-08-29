@@ -2,26 +2,44 @@ package com.anurag.financetracker.service;
 
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.anurag.financetracker.dto.LoginRequest;
 import com.anurag.financetracker.entity.User;
 import com.anurag.financetracker.repository.UserRepository;
-
+import com.anurag.financetracker.security.JwtService;
 @Service
 public class UserService {
 
+    private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository){
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService){
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     public User registerUser(User user){
         if(userRepository.existsByEmail(user.getEmail())){
             throw new RuntimeException("Email already exists");
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
+
+    public String login(LoginRequest request){
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+        if(!passwordEncoder.matches(
+                request.getPassword(),
+                user.getPassword())){
+            throw new RuntimeException("Invalid email or password");
+        }
+        return jwtService.generateToken(user.getEmail());
+}
 
     public List<User> getAllUsers(){
 
