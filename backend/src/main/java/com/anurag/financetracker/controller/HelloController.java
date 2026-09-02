@@ -10,4 +10,8 @@ public class HelloController {
     public String hello() {
         return "Hello! Welcome to Finance Tracker";
     }
+    @GetMapping("/admin-test")
+    public String adminTest() {
+        return "Welcome Admin!";
+    }
 }

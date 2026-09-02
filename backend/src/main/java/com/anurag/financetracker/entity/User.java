@@ -2,7 +2,11 @@ package com.anurag.financetracker.entity;
 
 import java.util.List;
 
+import com.anurag.financetracker.enums.Role;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,6 +34,9 @@ public class User {
 
     @NotBlank(message = "Password cannot be empty")
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @OneToMany(mappedBy = "user")
     private List<Transaction> transactions;

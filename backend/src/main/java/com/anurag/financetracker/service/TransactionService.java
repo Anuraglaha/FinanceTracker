@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.anurag.financetracker.dto.AddTransactionRequest;
@@ -31,8 +32,7 @@ public class TransactionService {
 
     public ApiResponse<TransactionResponse> addTransaction(AddTransactionRequest request) {
 
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = getLoggedInUser();
 
         Transaction transaction = new Transaction();
 
@@ -66,7 +66,9 @@ public class TransactionService {
 
     public ApiResponse<List<TransactionResponse>> getAllTransactions() {
 
-        List<Transaction> transactions = transactionRepository.findAll();
+        User user = getLoggedInUser();
+
+        List<Transaction> transactions = transactionRepository.findByUser(user);
 
         List<TransactionResponse> responseList = new ArrayList<>();
 
@@ -223,5 +225,14 @@ public class TransactionService {
         );
     }
 
-    
+    private User getLoggedInUser() {
+
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
 }

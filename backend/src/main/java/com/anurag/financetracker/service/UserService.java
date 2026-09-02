@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.anurag.financetracker.dto.LoginRequest;
 import com.anurag.financetracker.entity.User;
+import com.anurag.financetracker.enums.Role;
 import com.anurag.financetracker.repository.UserRepository;
 import com.anurag.financetracker.security.JwtService;
 @Service
@@ -27,6 +28,7 @@ public class UserService {
             throw new RuntimeException("Email already exists");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(Role.USER);
         return userRepository.save(user);
     }
 

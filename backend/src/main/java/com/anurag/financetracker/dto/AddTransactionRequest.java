@@ -13,9 +13,10 @@ import lombok.Data;
 @Data
 public class AddTransactionRequest {
 
-    @NotNull
-    private Integer userId;
-
+    //@NotNull
+    //private Integer userId;
+    //no longer needed because authoprization is done using JWT and the user is fetched from the security context
+    
     @NotNull
     @Positive
     private Double amount;
