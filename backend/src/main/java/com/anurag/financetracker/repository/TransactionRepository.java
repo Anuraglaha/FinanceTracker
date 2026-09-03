@@ -17,7 +17,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
 
     List<Transaction> findByUser(User user);
 
-    List<Transaction> findByTransactionDateBetween(
+    List<Transaction> findByUserAndTransactionDateBetween(
+        User user,
         LocalDate from,
         LocalDate to
     );

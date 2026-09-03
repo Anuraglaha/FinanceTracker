@@ -95,8 +95,16 @@ public class TransactionService {
     }
 
     public ApiResponse<TransactionResponse> getTransactionById(Integer id) {
+        User user = getLoggedInUser();
+
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
+
+        if (transaction.getUser().getId() != user.getId()) {
+            throw new RuntimeException(
+                    "You are not allowed to access this transaction"
+            );
+        }
 
         TransactionResponse response = new TransactionResponse();
 
@@ -119,7 +127,8 @@ public class TransactionService {
         LocalDate from,
         LocalDate to) {
         
-        List<Transaction> transactions = transactionRepository.findByTransactionDateBetween(from, to);
+        User user = getLoggedInUser();
+        List<Transaction> transactions = transactionRepository.findByUserAndTransactionDateBetween(user, from, to);
 
         List<TransactionResponse> responseList = new ArrayList<>();
 
@@ -147,14 +156,25 @@ public class TransactionService {
 
     public ApiResponse<TransactionResponse> updateTransaction(Integer id, AddTransactionRequest request) {
 
-        Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new RuntimeException("Transaction not found"));
+        User user = getLoggedInUser();
+
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Transaction not found"));
+
+        if (transaction.getUser().getId() != user.getId()) {
+            throw new RuntimeException(
+                    "You are not allowed to update this transaction"
+            );
+        }
+
         transaction.setAmount(request.getAmount());
         transaction.setType(request.getType());
         transaction.setCategory(request.getCategory());
         transaction.setDescription(request.getDescription());
         transaction.setTransactionDate(request.getTransactionDate());
 
-    Transaction updatedTransaction = transactionRepository.save(transaction);
+        Transaction updatedTransaction = transactionRepository.save(transaction);
 
         TransactionResponse response = new TransactionResponse();
 
@@ -175,8 +195,17 @@ public class TransactionService {
 
     public ApiResponse<String> deleteTransaction(Integer id) {
 
-        Transaction transaction = transactionRepository.findById(id).orElseThrow(() -> new RuntimeException("Transaction not found"));
-        transactionRepository.delete(transaction);
+        User user = getLoggedInUser();
+
+        Transaction transaction = transactionRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Transaction not found"));
+
+        if (transaction.getUser().getId() != user.getId()) {
+            throw new RuntimeException(
+                    "You are not allowed to delete this transaction"
+            );
+        }
 
         return new ApiResponse<>(
                 true,
@@ -187,11 +216,9 @@ public class TransactionService {
 
     
     public ApiResponse<MonthlySummaryResponse> getMonthlySummary(
-        Integer userId,
         LocalDate month) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = getLoggedInUser();
 
         LocalDate startDate = month;
         LocalDate endDate = month.plusMonths(1);

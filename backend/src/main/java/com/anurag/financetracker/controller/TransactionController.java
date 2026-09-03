@@ -79,10 +79,8 @@ public class TransactionController {
 
     @GetMapping("/monthly-summary")
     public ApiResponse<MonthlySummaryResponse> getMonthlySummary(
-            @RequestParam Integer userId,
             @RequestParam LocalDate month) {
-
-        return transactionService.getMonthlySummary(userId, month);
+        return transactionService.getMonthlySummary(month);
     }
     
 }
