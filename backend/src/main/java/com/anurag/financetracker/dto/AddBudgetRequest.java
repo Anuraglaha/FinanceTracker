@@ -12,9 +12,6 @@ import lombok.Data;
 public class AddBudgetRequest {
 
     @NotNull
-    private Integer userId;
-
-    @NotNull
     private LocalDate budgetMonth;
 
     @NotNull

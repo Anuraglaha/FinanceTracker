@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.anurag.financetracker.dto.AddBudgetRequest;
@@ -14,6 +15,7 @@ import com.anurag.financetracker.dto.UpdateBudgetRequest;
 import com.anurag.financetracker.entity.Budget;
 import com.anurag.financetracker.entity.User;
 import com.anurag.financetracker.enums.TransactionType;
+import com.anurag.financetracker.exception.ResourceAccessDeniedException;
 import com.anurag.financetracker.repository.BudgetRepository;
 import com.anurag.financetracker.repository.TransactionRepository;
 import com.anurag.financetracker.repository.UserRepository;
@@ -21,6 +23,17 @@ import com.anurag.financetracker.repository.UserRepository;
 
 @Service
 public class BudgetService {
+
+        private User getLoggedInUser() {
+
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        }
 
     private final BudgetRepository budgetRepository;
     private final UserRepository userRepository;
@@ -38,9 +51,9 @@ public class BudgetService {
 
 
     public ApiResponse<BudgetResponse> addBudget(AddBudgetRequest request) {
-        User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
-        
-        
+        User user = getLoggedInUser();
+
+
         boolean exists = budgetRepository.existsByUserAndCategoryAndBudgetMonth(
                 user,
                 request.getCategory(),
@@ -78,7 +91,17 @@ public class BudgetService {
 
     public ApiResponse<String> deleteBudget(Integer id) {
 
-        Budget budget = budgetRepository.findById(id).orElseThrow(() -> new RuntimeException("Budget not found"));
+        User user = getLoggedInUser();
+
+        Budget budget = budgetRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Budget not found"));
+
+        if (budget.getUser().getId() != user.getId()) {
+                throw new ResourceAccessDeniedException(
+                        "You are not allowed to delete this budget"
+                );
+        }
 
         budgetRepository.delete(budget);
 
@@ -93,8 +116,17 @@ public class BudgetService {
         Integer id,
         UpdateBudgetRequest request) {
 
+        User user = getLoggedInUser();
+
         Budget budget = budgetRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Budget not found"));
+                .orElseThrow(() ->
+                        new RuntimeException("Budget not found"));
+
+        if (budget.getUser().getId() != user.getId()) {
+                throw new ResourceAccessDeniedException(
+                        "You are not allowed to update this budget"
+                );
+        }
 
         boolean exists = budgetRepository.existsByUserAndCategoryAndBudgetMonthAndIdNot(
                 budget.getUser(),
@@ -131,7 +163,9 @@ public class BudgetService {
 
     public ApiResponse<List<BudgetResponse>> getAllBudgets() {
 
-        List<Budget> budgets = budgetRepository.findAll();
+        User user = getLoggedInUser();
+
+        List<Budget> budgets = budgetRepository.findByUser(user);
 
         List<BudgetResponse> responses = new ArrayList<>();
 
@@ -157,8 +191,17 @@ public class BudgetService {
 
     public ApiResponse<BudgetResponse> getBudgetById(Integer id) {
 
+        User user = getLoggedInUser();
+
         Budget budget = budgetRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Budget not found"));
+                .orElseThrow(() ->
+                        new RuntimeException("Budget not found"));
+
+        if (budget.getUser().getId() != user.getId()) {
+                throw new ResourceAccessDeniedException(
+                        "You are not allowed to access this budget"
+                );
+        }
 
         BudgetResponse response = new BudgetResponse();
 
@@ -176,8 +219,17 @@ public class BudgetService {
 
     public ApiResponse<BudgetSummaryResponse> getBudgetSummary(Integer id) {
 
+        User user = getLoggedInUser();
+
         Budget budget = budgetRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Budget not found"));
+                .orElseThrow(() ->
+                        new RuntimeException("Budget not found"));
+
+        if (budget.getUser().getId() != user.getId()) {
+                throw new ResourceAccessDeniedException(
+                        "You are not allowed to access this budget summary"
+                );
+        }
 
         LocalDate startDate = budget.getBudgetMonth();
         LocalDate endDate = startDate.plusMonths(1);

@@ -15,6 +15,7 @@ import com.anurag.financetracker.dto.TransactionResponse;
 import com.anurag.financetracker.entity.Transaction;
 import com.anurag.financetracker.entity.User;
 import com.anurag.financetracker.enums.TransactionType;
+import com.anurag.financetracker.exception.ResourceAccessDeniedException;
 import com.anurag.financetracker.repository.TransactionRepository;
 import com.anurag.financetracker.repository.UserRepository;
 
@@ -101,7 +102,7 @@ public class TransactionService {
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
 
         if (transaction.getUser().getId() != user.getId()) {
-            throw new RuntimeException(
+            throw new ResourceAccessDeniedException(
                     "You are not allowed to access this transaction"
             );
         }
@@ -163,7 +164,7 @@ public class TransactionService {
                         new RuntimeException("Transaction not found"));
 
         if (transaction.getUser().getId() != user.getId()) {
-            throw new RuntimeException(
+            throw new ResourceAccessDeniedException(
                     "You are not allowed to update this transaction"
             );
         }
@@ -202,7 +203,7 @@ public class TransactionService {
                         new RuntimeException("Transaction not found"));
 
         if (transaction.getUser().getId() != user.getId()) {
-            throw new RuntimeException(
+            throw new ResourceAccessDeniedException(
                     "You are not allowed to delete this transaction"
             );
         }
