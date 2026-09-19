@@ -11,6 +11,11 @@ import com.anurag.financetracker.enums.Category;
 
 public interface BudgetRepository extends JpaRepository<Budget, Integer> {
     List<Budget> findByUser(User user);
+
+    List<Budget> findByUserAndBudgetMonth(
+        User user,
+        LocalDate budgetMonth
+    );
     
     boolean existsByUserAndCategoryAndBudgetMonth(
         User user,
