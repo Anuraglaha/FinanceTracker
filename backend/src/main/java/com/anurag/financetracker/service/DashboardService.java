@@ -1,18 +1,24 @@
 package com.anurag.financetracker.service;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import com.anurag.financetracker.dto.CategoryExpenseResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import java.time.LocalDate;
+
+import com.anurag.financetracker.dto.CategoryExpenseResponse;
 import com.anurag.financetracker.dto.DashboardResponse;
-import com.anurag.financetracker.entity.User;
-import com.anurag.financetracker.repository.BudgetRepository;
-import java.util.List;
+import com.anurag.financetracker.dto.MonthlyReportResponse;
 import com.anurag.financetracker.entity.Budget;
+import com.anurag.financetracker.entity.Transaction;
+import com.anurag.financetracker.entity.User;
+import com.anurag.financetracker.enums.TransactionType;
+import com.anurag.financetracker.repository.BudgetRepository;
 import com.anurag.financetracker.repository.TransactionRepository;
 import com.anurag.financetracker.repository.UserRepository;
-import com.anurag.financetracker.enums.TransactionType;
 
 
 @Service
@@ -105,6 +111,58 @@ public class DashboardService {
                         ((Number) row[1]).doubleValue()
                 ))
                 .toList();
+    }
+
+    public List<MonthlyReportResponse> getMonthlyReport() {
+
+        User user = getLoggedInUser();
+
+        LocalDate currentMonth = LocalDate.now().withDayOfMonth(1);
+        LocalDate startDate = currentMonth.minusMonths(5);
+        LocalDate endDate = currentMonth.plusMonths(1);
+
+        List<Transaction> transactions =
+                transactionRepository.findByUserAndTransactionDateBetween(
+                        user,
+                        startDate,
+                        endDate
+                );
+
+        Map<String, List<Transaction>> monthlyTransactions =
+        transactions.stream()
+                .collect(Collectors.groupingBy(
+                        transaction -> transaction.getTransactionDate()
+                                .format(DateTimeFormatter.ofPattern("yyyy-MM"))
+                ));
+
+        List<MonthlyReportResponse> report = new ArrayList<>();
+        for (Map.Entry<String, List<Transaction>> entry : monthlyTransactions.entrySet()) {
+
+                String month = entry.getKey();
+                List<Transaction> monthTransactions = entry.getValue();
+
+                Double income = monthTransactions.stream()
+                        .filter(t -> t.getType() == TransactionType.INCOME)
+                        .mapToDouble(Transaction::getAmount)
+                        .sum();
+
+                Double expense = monthTransactions.stream()
+                        .filter(t -> t.getType() == TransactionType.EXPENSE)
+                        .mapToDouble(Transaction::getAmount)
+                        .sum();
+
+                report.add(
+                        new MonthlyReportResponse(
+                                month,
+                                income,
+                                expense
+                        )
+                );
+                
+        }
+
+        return report;
+
     }
 
 }
