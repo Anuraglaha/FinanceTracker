@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.anurag.financetracker.dto.BudgetVsActualResponse;
 import com.anurag.financetracker.dto.CategoryExpenseResponse;
 import com.anurag.financetracker.dto.DashboardResponse;
 import com.anurag.financetracker.dto.MonthlyReportResponse;
@@ -34,5 +35,10 @@ public class DashboardController {
     @GetMapping("/monthly")
     public List<MonthlyReportResponse> getMonthlyReport() {
         return dashboardService.getMonthlyReport();
+    }
+
+    @GetMapping("/budget-vs-actual")
+    public List<BudgetVsActualResponse> getBudgetVsActual() {
+        return dashboardService.getBudgetVsActual();
     }
 }

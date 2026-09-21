@@ -2,6 +2,7 @@ package com.anurag.financetracker.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.anurag.financetracker.dto.BudgetVsActualResponse;
 import com.anurag.financetracker.dto.CategoryExpenseResponse;
 import com.anurag.financetracker.dto.DashboardResponse;
 import com.anurag.financetracker.dto.MonthlyReportResponse;
@@ -162,6 +164,66 @@ public class DashboardService {
         }
 
         return report;
+
+    }
+
+    public List<BudgetVsActualResponse> getBudgetVsActual() {
+
+        User user = getLoggedInUser();
+
+        LocalDate currentMonth = LocalDate.now().withDayOfMonth(1);
+
+        List<Budget> budgets = budgetRepository.findByUserAndBudgetMonth(
+                user,
+                currentMonth
+        );
+        List<Object[]> expenseResults =
+                transactionRepository.getCategoryWiseAmount(
+                        user,
+                        currentMonth,
+                        currentMonth.plusMonths(1),
+                        TransactionType.EXPENSE
+                );
+
+        Map<String, Double> expenseMap = new HashMap<>();
+
+        for (Object[] row : expenseResults) {
+
+                String category = row[0].toString();
+                Double amount = ((Number) row[1]).doubleValue();
+
+                expenseMap.put(category, amount);
+        }
+
+        List<BudgetVsActualResponse> result = new ArrayList<>();
+
+        for (Budget budget : budgets) {
+
+                String category = budget.getCategory().toString();
+
+                Double budgetAmount = budget.getBudgetAmount();
+
+                Double spent = expenseMap.getOrDefault(category, 0.0);
+
+                Double remaining = budgetAmount - spent;
+
+                Double utilizationPercentage =
+                        budgetAmount > 0
+                                ? (spent / budgetAmount) * 100
+                                : 0.0;
+
+                result.add(
+                        new BudgetVsActualResponse(
+                                category,
+                                budgetAmount,
+                                spent,
+                                remaining,
+                                utilizationPercentage
+                        )
+                );
+        }
+
+        return result;
 
     }
 
